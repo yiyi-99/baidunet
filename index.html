@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>百度网盘会员登录</title>
+    <style>
+        #preview {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>百度网盘会员登录</h1>
+    <p>请使用下面的摄像头扫描您的百度网盘登录二维码：</p>
+    <video id="preview"></video>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js"></script>
+    <script>
+        const video = document.getElementById('preview');
+
+        function startVideo() {
+            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(stream => {
+                video.srcObject = stream;
+                video.setAttribute('playsinline', true);
+                video.play();
+                requestAnimationFrame(tick);
+            });
+        }
+
+        function tick() {
+            if (video.readyState === video.HAVE_ENOUGH_DATA) {
+                const canvas = document.createElement('canvas');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                const context = canvas.getContext('2d');
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
+
+                if (code) {
+                    console.log('找到二维码:', code.data);
+                    // 假设code.data是登录URL，替换为你的百度网盘登录URL
+                    const yourLoginUrl = "https://your_baidu_pan_login_url";
+                    window.location.href = yourLoginUrl;
+                }
+            }
+            requestAnimationFrame(tick);
+        }
+
+        startVideo();
+    </script>
+</body>
+</html>
