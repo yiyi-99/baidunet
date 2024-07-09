@@ -3,52 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>百度网盘会员登录</title>
-    <style>
-        #preview {
-            width: 100%;
-            height: auto;
-        }
-    </style>
+    <title>QR Code Scanner</title>
 </head>
 <body>
-    <h1>百度网盘会员登录</h1>
-    <p>请使用下面的摄像头扫描您的百度网盘登录二维码：</p>
-    <video id="preview"></video>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsqr/1.4.0/jsQR.js"></script>
+    <h1>QR Code Scanner</h1>
+    <video id="qr-video" width="300" height="200" autoplay></video>
+    <br>
+    <button onclick="scanQRCode()">Scan QR Code</button>
+    
     <script>
-        const video = document.getElementById('preview');
-
-        function startVideo() {
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } }).then(stream => {
-                video.srcObject = stream;
-                video.setAttribute('playsinline', true);
-                video.play();
-                requestAnimationFrame(tick);
-            });
-        }
-
-        function tick() {
-            if (video.readyState === video.HAVE_ENOUGH_DATA) {
-                const canvas = document.createElement('canvas');
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                const context = canvas.getContext('2d');
-                context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-                const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: 'dontInvert' });
-
-                if (code) {
-                    console.log('找到二维码:', code.data);
-                    // 假设code.data是登录URL，替换为你的百度网盘登录URL
-                    const yourLoginUrl = "https://your_baidu_pan_login_url";
-                    window.location.href = yourLoginUrl;
-                }
+        // 获取视频流并启动摄像头
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const videoElement = document.getElementById('qr-video');
+                videoElement.srcObject = stream;
+            } catch (error) {
+                console.error('Error accessing camera:', error);
             }
-            requestAnimationFrame(tick);
         }
 
-        startVideo();
+        // 扫描二维码
+        function scanQRCode() {
+            const videoElement = document.getElementById('qr-video');
+            const canvas = document.createElement('canvas');
+            const context = canvas.getContext('2d');
+            canvas.width = videoElement.videoWidth;
+            canvas.height = videoElement.videoHeight;
+            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            
+            // 使用 jsqr 库来解码二维码
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
+            if (code) {
+                alert('QR Code detected: ' + code.data);
+                // 这里可以根据扫描到的内容执行其他操作
+            } else {
+                alert('No QR Code detected');
+            }
+        }
+
+        // 页面加载完成后启动摄像头
+        document.addEventListener('DOMContentLoaded', startCamera);
     </script>
 </body>
 </html>
