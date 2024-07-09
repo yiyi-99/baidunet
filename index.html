@@ -6,16 +6,33 @@
     <title>QR Code Scanner</title>
 </head>
 <body>
-    <h1>QR Code Scanner</h1>
+    <h1>百度网盘会员登陆</h1>
     <video id="qr-video" width="300" height="200" autoplay></video>
     <br>
     <button onclick="scanQRCode()">Scan QR Code</button>
     
     <script>
-        // 获取视频流并启动摄像头
         async function startCamera() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                // 获取所有设备
+                const devices = await navigator.mediaDevices.enumerateDevices();
+                let videoDeviceId = null;
+                
+                // 查找后置摄像头设备
+                devices.forEach(device => {
+                    if (device.kind === 'videoinput' && device.label.includes('back')) {
+                        videoDeviceId = device.deviceId;
+                    }
+                });
+                
+                // 如果找到后置摄像头设备，则使用它，否则使用默认的摄像头
+                const constraints = {
+                    video: {
+                        deviceId: videoDeviceId ? { exact: videoDeviceId } : undefined
+                    }
+                };
+                
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
                 const videoElement = document.getElementById('qr-video');
                 videoElement.srcObject = stream;
             } catch (error) {
@@ -23,7 +40,6 @@
             }
         }
 
-        // 扫描二维码
         function scanQRCode() {
             const videoElement = document.getElementById('qr-video');
             const canvas = document.createElement('canvas');
@@ -33,18 +49,9 @@
             context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
             const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
             
-            // 使用 jsqr 库来解码二维码
             const code = jsQR(imageData.data, imageData.width, imageData.height);
             if (code) {
                 alert('QR Code detected: ' + code.data);
-                // 这里可以根据扫描到的内容执行其他操作
             } else {
                 alert('No QR Code detected');
-            }
-        }
-
-        // 页面加载完成后启动摄像头
-        document.addEventListener('DOMContentLoaded', startCamera);
-    </script>
-</body>
-</html>
+          
