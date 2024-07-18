@@ -7,12 +7,12 @@
 <body>
     <h1>百度网盘登录</h1>
     <p>根据需要点击对应的链接进行扫码登录:</p>
-    <a href="weixin://dl/scan" id="scanLink">电脑端或平板登录点击这里</a>
+    <a href="weixin://scanqrcode" id="scanLink">电脑端或平板登录点击这里</a>
 
     <script>
         document.getElementById('scanLink').addEventListener('click', function(event) {
             event.preventDefault(); // 防止默认链接行为
-            const url = 'weixin://dl/scan';
+            const url = 'weixin://scanqrcode';
             window.location.href = url; // 跳转到URL Scheme
         });
     </script>
