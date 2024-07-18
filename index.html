@@ -2,56 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QR Code Scanner</title>
+    <title>Login with Baidu Netdisk</title>
 </head>
 <body>
-    <h1>百度网盘会员登陆</h1>
-    <video id="qr-video" width="300" height="200" autoplay></video>
-    <br>
-    <button onclick="scanQRCode()">Scan QR Code</button>
-    
-    <script>
-        async function startCamera() {
-            try {
-                // 获取所有设备
-                const devices = await navigator.mediaDevices.enumerateDevices();
-                let videoDeviceId = null;
-                
-                // 查找后置摄像头设备
-                devices.forEach(device => {
-                    if (device.kind === 'videoinput' && device.label.includes('back')) {
-                        videoDeviceId = device.deviceId;
-                    }
-                });
-                
-                // 如果找到后置摄像头设备，则使用它，否则使用默认的摄像头
-                const constraints = {
-                    video: {
-                        deviceId: videoDeviceId ? { exact: videoDeviceId } : undefined
-                    }
-                };
-                
-                const stream = await navigator.mediaDevices.getUserMedia(constraints);
-                const videoElement = document.getElementById('qr-video');
-                videoElement.srcObject = stream;
-            } catch (error) {
-                console.error('Error accessing camera:', error);
-            }
-        }
+    <h1>Login to Baidu Netdisk</h1>
+    <a href="#" id="scanLink">Scan QR Code with Baidu Netdisk</a>
+    <div id="qrcode"></div>
 
-        function scanQRCode() {
-            const videoElement = document.getElementById('qr-video');
-            const canvas = document.createElement('canvas');
-            const context = canvas.getContext('2d');
-            canvas.width = videoElement.videoWidth;
-            canvas.height = videoElement.videoHeight;
-            context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-            const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-            
-            const code = jsQR(imageData.data, imageData.width, imageData.height);
-            if (code) {
-                alert('QR Code detected: ' + code.data);
-            } else {
-                alert('No QR Code detected');
-          
+    <script>
+        document.getElementById('scanLink').addEventListener('click', function() {
+            fetch('/generateQRCode')
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById('qrcode').innerHTML = html;
+                });
+        });
+    </script>
+</body>
+</html>
