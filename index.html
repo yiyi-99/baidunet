@@ -2,20 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login with Baidu Netdisk</title>
+    <title>Login to Baidu Netdisk</title>
 </head>
 <body>
     <h1>Login to Baidu Netdisk</h1>
-    <a href="#" id="scanLink">Scan QR Code with Baidu Netdisk</a>
-    <div id="qrcode"></div>
+    <p>Click the link below to scan the QR code with Baidu Netdisk:</p>
+    <a href="baiduyun://scan" id="scanLink">Scan QR Code with Baidu Netdisk</a>
 
     <script>
-        document.getElementById('scanLink').addEventListener('click', function() {
-            fetch('/generateQRCode')
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('qrcode').innerHTML = html;
-                });
+        document.getElementById('scanLink').addEventListener('click', function(event) {
+            event.preventDefault(); // 防止默认链接行为
+            const url = 'baiduyun://scan';
+            window.location.href = url; // 跳转到URL Scheme
         });
     </script>
 </body>
