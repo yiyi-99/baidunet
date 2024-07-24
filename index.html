@@ -1,20 +1,40 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
-    <title>百 度 网 盘 登 录</title>
+    <title>微信扫一扫示例</title>
+    <script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
 </head>
 <body>
-    <h1>百度网盘登录</h1>
-    <p>根据需要点击对应的链接进行扫码登录:</p>
-    <a href="weixin://scanqrcode" id="scanLink">电脑端或平板登录点击这里</a>
+    <h1>微信扫一扫示例</h1>
+    <button id="scanQRCode">点击扫一扫</button>
 
-    <script src="https://res2.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
     <script>
-        document.getElementById('scanLink').addEventListener('click', function(event) {
-            event.preventDefault(); // 防止默认链接行为
-            const url = 'weixin://scanqrcode';
-            window.location.href = url; // 跳转到URL Scheme
+        // 微信JS SDK配置
+        wx.config({
+            debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来
+            appId: '你的公众号的appId', // 必填，公众号的唯一标识
+            timestamp: 1234567890, // 必填，生成签名的时间戳
+            nonceStr: '随机字符串', // 必填，生成签名的随机串
+            signature: '签名', // 必填，签名
+            jsApiList: ['scanQRCode'] // 必填，需要使用的JS接口列表
+        });
+
+        wx.ready(function () {
+            document.getElementById('scanQRCode').onclick = function () {
+                wx.scanQRCode({
+                    needResult: 1, // 默认为0，扫描结果由微信处理，1则直接返回扫描结果，
+                    scanType: ["qrCode","barCode"], // 可以指定扫二维码还是一维码，默认二者都有
+                    success: function (res) {
+                        var result = res.resultStr; // 当needResult 为 1 时，扫码返回的结果
+                        alert('扫描结果：' + result);
+                    }
+                });
+            };
+        });
+        
+        wx.error(function (res) {
+            alert('配置失败：' + res.errMsg);
         });
     </script>
 </body>
